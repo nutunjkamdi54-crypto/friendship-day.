@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Friendship Day!</title>
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+ 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+ 
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+ 
+    body {
+      background: #0d0c1d;
+      color: #fff;
+      overflow-x: hidden;
+    }
+ 
+    /* Floating Heart Canvas Engine */
+    #heartCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+ 
+    /* Vertical Fullscreen Sections */
+    section {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 24px;
+      text-align: center;
+      overflow: hidden;
+    }
+ 
+    /* Background Gradients */
+    #sec1 { background: linear-gradient(180deg, rgba(26,11,46,0.85) 0%, rgba(13,12,29,0.85) 100%); }
+    #sec2 { background: linear-gradient(180deg, rgba(13,12,29,0.85) 0%, rgba(42,8,26,0.85) 100%); }
+    #sec3 { background: linear-gradient(180deg, rgba(42,8,26,0.85) 0%, rgba(21,13,42,0.85) 100%); }
+    #sec4 { background: linear-gradient(180deg, rgba(21,13,42,0.85) 0%, rgba(32,11,26,0.85) 100%); }
+    #sec5 { background: linear-gradient(180deg, rgba(32,11,26,0.85) 0%, rgba(13,12,29,0.85) 100%); }
+ 
+    /* Typography */
+    .subtitle {
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ff758c;
+      margin-bottom: 15px;
+    }
+ 
+    h1, h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #fff0f5;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+ 
+    p {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.7;
+      max-width: 360px;
+    }
+ 
+    /* SECTION 1: iOS Lockscreen Notification Banner */
+    .notification-banner {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      cursor: pointer;
+      animation: pulseAlert 2s infinite;
+      text-decoration: none;
+      display: block;
+    }
+ 
+    @keyframes pulseAlert {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 117, 140, 0.3); }
+      50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(255, 117, 140, 0.7); }
+    }
+ 
+    .notif-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+ 
+    /* Scroll Down Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      animation: bounce 2s infinite;
+    }
+ 
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+      40% { transform: translate(-50%, -10px); }
+      60% { transform: translate(-50%, -5px); }
+    }
+ 
+    /* Section 2: Wish Header Icon */
+    .flower-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 15px rgba(255, 117, 140, 0.6));
+    }
+ 
+    /* Section 3: Strength Badges */
+    .badge-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 15px;
+    }
+ 
+    .badge-item {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 14px 20px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(5px);
+    }
+ 
+    /* SECTION 4: 3D Clickable Card Deck */
+    .card-deck {
+      position: relative;
+      width: 250px;
+      height: 320px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+ 
+    .stack-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 12px 12px 25px 12px;
+      color: #333;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      transition: all 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+ 
+    .stack-card img {
+      width: 100%;
+      height: 80%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+ 
+    .stack-card span {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: #ff2a5f;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+ 
+    /* Section 5: Letter Card */
+    .letter-box {
+      background: rgba(255, 255, 255, 0.95);
+      color: #222;
+      padding: 24px;
+      border-radius: 20px;
+      text-align: left;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      border-left: 5px solid #ff2a5f;
+    }
+ 
+    .letter-box p {
+      color: #333;
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      line-height: 1.5;
+    }
+ 
+    .replay-btn {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #ff2a5f, #ff758c);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255,42,95,0.4);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+ 
+  <!-- Floating Heart Canvas Overlay -->
+  <canvas id="heartCanvas"></canvas>
+ 
+  <!-- SECTION 1: iOS Lockscreen Notification -->
+  <section id="sec1">
+    <p class="subtitle">New Secret Message</p>
+    <a href="#sec2" class="notification-banner">
+      <div class="notif-header">
+        <span>💬 MESSAGES</span>
+        <span style="margin-left: auto;">Just now</span>
+      </div>
+      <h3 style="font-size: 1rem; color: #fff; margin-bottom: 4px;">Best Friend ❤️</h3>
+      <p style="margin-bottom: 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">You have 1 unread memory gift. Tap to unlock!</p>
+    </a>
+ 
+    <a href="#sec2" class="scroll-indicator">
+      <span>Scroll Down</span>
+      <span>▼</span>
+    </a>
+  </section>
+ 
+  <!-- SECTION 2: Wish -->
+  <section id="sec2">
+    <div class="flower-icon">✨🥳✨</div>
+    <div class="subtitle">Celebration Time</div>
+    <h1>Happy Friendship Day!</h1>
+    <p>Today is all about celebrating you, our shared laughs, and the bond that keeps us strong through everything.</p>
+    <a href="#sec3" class="scroll-indicator">
+      <span>Keep Scrolling</span>
+      <span>▼</span>
+    </a>
+  </section>
+ 
+  <!-- SECTION 3: Supporter & Strength -->
+  <section id="sec3">
+    <div class="subtitle">Why You're Special</div>
+    <h2>My Supporter & Strength</h2>
+    <p style="font-size: 0.85rem;">Thank you for always being my foundation.</p>
+ 
+    <div class="badge-grid">
+      <div class="badge-item">
+        <span style="font-size: 1.3rem;">🛡️</span>
+        <span>My Safe Haven & Confidant</span>
+      </div>
+      <div class="badge-item">
+        <span style="font-size: 1.3rem;">⚡</span>
+        <span>My Biggest Cheerleader</span>
+      </div>
+      <div class="badge-item">
+        <span style="font-size: 1.3rem;">🌟</span>
+        <span>Constant Pillar of Strength</span>
+      </div>
+    </div>
+ 
+    <a href="#sec4" class="scroll-indicator">
+      <span>See Memories</span>
+      <span>▼</span>
+    </a>
+  </section>
+ 
+  <!-- SECTION 4: Clickable Memory Stack -->
+  <section id="sec4">
+    <div class="subtitle">Memory Gallery</div>
+    <h2>Moments We Cherish</h2>
+    <p style="font-size: 0.8rem; margin-bottom: 5px;">Tap the photo to see the next memory! 📸</p>
+ 
+    <div class="card-deck" onclick="rotateCards()">
+      <div class="stack-card" style="transform: rotate(-4deg); z-index: 3;">
+        <img src="pic1.jpeg"alt="Pic 1">
+        <span>"Our friendship is as sweet as these chocolates and as special as these matching bracelets. 🫶"</span>
+      </div>
+      <div class="stack-card" style="transform: rotate(3deg); z-index: 2;">
+        <img src="pic2.jpeg" alt="Pic 2">
+        <span>From random laughs to unforgettable moments, every day with you becomes a story.💓"</span>
+      </div>
+      <div class="stack-card" style="transform: rotate(-2deg); z-index: 1;">
+        <img src="pic3.jpeg" alt="Pic 3">
+        <span>"No perfect pose, no perfect place—just two best friends creating perfect memories together. 🫶"</span>
+      </div>
+       <div class="stack-card" style="transform: rotate(-2deg); z-index: 1;">
+        <img src="pic4.jpeg" alt="Pic 4">
+        <span>"Some nights become unforgettable—not because of where we were, but because we were together. ❤️"</span>
+      </div>
+    </div>
+ 
+    <a href="#sec5" class="scroll-indicator">
+      <span>Read Letter</span>
+      <span>▼</span>
+    </a>
+  </section>
+ 
+  <!-- SECTION 5: Heartfelt Letter -->
+  <section id="sec5">
+    <div class="subtitle">From the Heart</div>
+    <h2>A Letter For You 💌</h2>
+ 
+    <div class="letter-box">
+      <p>Dear Bestie,</p>
+      <p>I just wanted to take a moment to tell you how grateful I am to have you in my life. Life is brighter, funnier, and easier with you around.</p>
+      <p>Thank you for always standing by me!</p>
+      <p style="text-align: right; margin-top: 10px; font-weight: bold; color: #ff2a5f;">— Forever ❤️</p>
+    </div>
+ 
+    <a href="#sec1" class="replay-btn">Back to Top ⬆️</a>
+  </section>
+ 
+  <script>
+    // --- 1. Background Heart Animation Engine ---
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+ 
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+ 
+    class Heart {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.size = Math.random() * 14 + 10;
+        this.speedY = Math.random() * 1.5 + 0.6;
+        this.opacity = Math.random() * 0.5 + 0.3;
+      }
+      update() {
+        this.y -= this.speedY;
+        if (this.y < -30) {
+          this.y = canvas.height + 30;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+      draw() {
+        ctx.fillStyle = `rgba(255, 117, 140, ${this.opacity})`;
+        ctx.font = `${this.size}px serif`;
+        ctx.fillText('❤️', this.x, this.y);
+      }
+    }
+ 
+    for (let i = 0; i < 28; i++) {
+      hearts.push(new Heart());
+    }
+ 
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach(h => {
+        h.update();
+        h.draw();
+      });
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+ 
+    // --- 2. Click-to-Cycle Photo Cards ---
+    function rotateCards() {
+      const deck = document.querySelector('.card-deck');
+      const cards = deck.querySelectorAll('.stack-card');
+      const topCard = cards[0];
+ 
+      // Slide out top card
+      topCard.style.transform = 'translateY(-140px) rotate(20deg)';
+      topCard.style.opacity = '0';
+ 
+      setTimeout(() => {
+        deck.appendChild(topCard);
+        topCard.style.transform = 'rotate(-2deg)';
+        topCard.style.opacity = '1';
+ 
+        // Re-index z-indices
+        const updatedCards = deck.querySelectorAll('.stack-card');
+        updatedCards.forEach((card, index) => {
+          card.style.zIndex = updatedCards.length - index;
+        });
+      }, 300);
+    }
+ 
+    // --- 3. Confetti on Section 2 Scroll ---
+    const sec2 = document.getElementById('sec2');
+    let confettiFired = false;
+ 
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !confettiFired) {
+          confetti({ particleCount: 90, spread: 60, origin: { y: 0.6 } });
+          confettiFired = true;
+        }
+      });
+    }, { threshold: 0.6 });
+ 
+    observer.observe(sec2);
+  </script>
+</body>
+</html>
